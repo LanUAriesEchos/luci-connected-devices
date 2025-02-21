@@ -1,0 +1,60 @@
+<%+header%>
+<h2><%:Connected Devices%></h2>
+
+<!-- Network Dropdown -->
+<div class="cbi-section">
+    <label for="network-select"><%:Select Network:%></label>
+    <select id="network-select" class="cbi-input-select">
+        <% for _, network in ipairs(networks) do %>
+            <option value="<%=network%>"><%=network%></option>
+        <% end %>
+    </select>
+</div>
+
+<!-- Device Tables -->
+<div id="device-tables">
+    <% for _, network in ipairs(networks) do %>
+        <div id="table-<%=network%>" class="network-table" style="display: none;">
+            <h3><%:Devices on %> <%=network%></h3>
+            <table class="table">
+                <tr>
+                    <th><%:Hostname%></th>
+                    <th><%:IP Address%></th>
+                    <th><%:MAC Address%></th>
+                </tr>
+                <% if devices and #devices > 0 then %>
+                    <% for _, device in ipairs(devices) do %>
+                        <% if device.network == network then %>
+                            <tr>
+                                <td><%=device.hostname or "Unknown"%></td>
+                                <td><%=device.ip or "Unknown"%></td>
+                                <td><%=device.mac or "Unknown"%></td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                <% else %>
+                    <tr>
+                        <td colspan="3"><%:No devices found on %> <%=network%></td>
+                    </tr>
+                <% end %>
+            </table>
+        </div>
+    <% end %>
+</div>
+
+<!-- JavaScript to Handle Dropdown Changes -->
+<script type="text/javascript">
+    document.getElementById("network-select").addEventListener("change", function() {
+        var selectedNetwork = this.value;
+        var tables = document.querySelectorAll(".network-table");
+        tables.forEach(function(table) {
+            table.style.display = "none";
+        });
+        document.getElementById("table-" + selectedNetwork).style.display = "block";
+    });
+
+    // Show the first network by default
+    document.getElementById("network-select").dispatchEvent(new Event("change"));
+</script>
+
+<%+footer%>
